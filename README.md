@@ -41,7 +41,7 @@ The Edge Function is an anonymous demo endpoint with server-side SQL quotas. COR
 
 ## Frontend hosting
 
-The frontend uses GitHub Pages and Supabase supplies the live backend. Build command: `npm run build`. Published directory: `dist`. The Pages workflow publishes the `CodeforPhishGuard` branch and uses `/PhishGuard/` as its base path. Its public Supabase endpoint is a build variable, not a secret. The Supabase browser allowlist includes `https://edwinlebo.github.io`.
+The frontend uses GitHub Pages and Supabase supplies the live backend. Build command: `npm run build`. Published directory: `dist`. The Pages workflow publishes `main` and uses `/PhishGuard/` as its base path. Development remains on `CodeforPhishGuard`; both branches contain the initial release. Its public Supabase endpoint is a build variable, not a secret. The Supabase browser allowlist includes `https://edwinlebo.github.io`.
 
 ## Limits and delivery plan
 
