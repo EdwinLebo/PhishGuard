@@ -39,7 +39,9 @@ public final class WatchService extends NotificationListenerService {
         if (sbn==null || !allowed(sbn.getPackageName())) return;
         Notification notification=sbn.getNotification();
         if (notification==null || (notification.flags & Notification.FLAG_GROUP_SUMMARY)!=0) return;
-        String text=extract(notification.extras);
+        String text;
+        try { text=extract(notification.extras); }
+        catch (RuntimeException malformedExtras) { return; } // Untrusted app extras must not crash Watch.
         if (text.isBlank() || text.length()>5000) return;
         String pkg=sbn.getPackageName();
         worker.execute(() -> {

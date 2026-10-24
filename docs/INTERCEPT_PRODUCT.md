@@ -14,7 +14,7 @@ An on-device assessment at the point someone shares a message for help, combinin
 - Recovery checklist, existing explicit-consent Supabase checking and awareness quiz.
 
 ## Not built or claimed
-No background SMS/WhatsApp access, system-wide interception, verified threat feed, link crawling, bank payment blocking, native APK or guaranteed fraud prevention. The phone frame is a demonstration, not proof that another app was intercepted. No offline shell cache: opening the app still needs connectivity. AI is not configured. Android share-menu installation needs a real-device acceptance test; desktop testing cannot certify it.
+The web app has no background SMS/WhatsApp access. A separate opt-in Android Watch demo now implements notification-preview checks; see android-watch/README.md for coverage, installation and pending phone acceptance tests. No system-wide link interception, verified threat feed, link crawling, bank payment blocking or guaranteed fraud prevention. The phone frame is a demonstration, not proof that another app was intercepted. No offline shell cache: opening the app still needs connectivity. AI is not configured. Android share-menu installation needs a real-device acceptance test; desktop testing cannot certify it.
 
 ## Buyer and pilot hypothesis
 Start with one university's student-support team or bursary administrator sponsoring access for students. Later explore bank financial-wellness or fraud-education teams. Students get a free private checker; institutions could pay a fixed pilot fee followed by an annual sponsorship/support licence. Prices, procurement, partner interest and willingness to pay are unvalidated. Do not present them as revenue or commitments.

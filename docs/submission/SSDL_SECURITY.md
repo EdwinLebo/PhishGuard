@@ -29,3 +29,9 @@ If abuse or incorrect behaviour occurs: disable/restrict the Edge endpoint, rota
 
 ## Before submission
 Confirm no secrets in GitHub; verify judges' access without login; check cloud/rate-limit fallback; keep Gemini labelled inactive until tested; disclose pre-event preparation and the feature completed during the hackathon. Team lead remains responsible for final claims and submission.
+
+
+## Android Watch addendum (24 October 2026)
+Native demo adds opt-in notification access. Android grants broad notification visibility; source-package filtering occurs before extraction. Consent, source selection, notification access and warning permission are setup requirements. No INTERNET, READ_SMS, contacts, accessibility or overlay permission; no notification text is transmitted to Supabase. Only consent/preferences persist, backup is disabled, and manual input does not save view state. Raw message bodies are not stored or logged. Reasons/hostnames are memory-only, with clear controls. SHA-256 duplicate fingerprints are memory-only, bounded and expire after two minutes. Alerts omit message bodies and use private lock-screen visibility plus a generic public version. Unrelated packages and group summaries are ignored. Oversized/redacted/missing previews may be missed. No system-wide click blocking or malware verdict.
+
+CI builds a debug-signed APK and verifies its signature. This is a development distribution, not store approval or production signing. Physical-device notification capture, permission lifecycle, delivery timing and OEM battery restrictions remain acceptance tests, not completed guarantees. See android-watch/README.md.

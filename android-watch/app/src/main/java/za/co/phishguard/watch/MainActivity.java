@@ -26,7 +26,13 @@ public final class MainActivity extends Activity {
         if(bold)v.setTypeface(null,Typeface.BOLD);page.addView(v);return v;
     }
     private void button(String label,View.OnClickListener action) { Button b=new Button(this);b.setText(label);b.setAllCaps(false);page.addView(b);b.setOnClickListener(action); }
-    private boolean access() { return getSystemService(NotificationManager.class).isNotificationListenerAccessGranted(new ComponentName(this,WatchService.class)); }
+    private boolean access() {
+        ComponentName component=new ComponentName(this,WatchService.class);
+        if(Build.VERSION.SDK_INT>=27) return getSystemService(NotificationManager.class).isNotificationListenerAccessGranted(component);
+        String listeners=Settings.Secure.getString(getContentResolver(),"enabled_notification_listeners");
+        if(listeners!=null) for(String listener:listeners.split(":")) if(component.equals(ComponentName.unflattenFromString(listener))) return true;
+        return false;
+    }
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);WatchService.channels(this);
         ScrollView scroll=new ScrollView(this);page=new LinearLayout(this);page.setOrientation(LinearLayout.VERTICAL);page.setPadding(dp(24),dp(20),dp(24),dp(30));page.setBackgroundColor(Color.rgb(250,251,248));scroll.addView(page);setContentView(scroll);
@@ -52,7 +58,7 @@ public final class MainActivity extends Activity {
         enabled=new Switch(this);enabled.setText("Monitor selected message notifications");enabled.setChecked(WatchService.prefs(this).getBoolean("enabled",false));page.addView(enabled);
         enabled.setOnCheckedChangeListener((b,on)->{
             var p=WatchService.prefs(this);
-            if(on && (!p.getBoolean("consent",false)||!access()||!WatchService.alertsAvailable(this)||!(p.getBoolean("whatsapp",false)||p.getBoolean("sms",false)))) {
+            if(on && (!p.getBoolean("consent",false)||!access()||!WatchService.alertsAvailable(this)||!(p.getBoolean("whatsapp",false)||(p.getBoolean("sms",false)&&Telephony.Sms.getDefaultSmsPackage(this)!=null)))) {
                 b.setChecked(false);toast("Choose a source, consent, enable notification access and allow warnings first.");return;
             }
             p.edit().putBoolean("enabled",on).apply();if(!on)WatchService.clearEvidence(this);refresh();
@@ -62,7 +68,7 @@ public final class MainActivity extends Activity {
         text("Latest warning • memory only",20,true);evidence=text("No warning in this session.",14,false);
         button("Clear warning details",v->{WatchService.clearEvidence(this);refresh();});
         text("Try a message or share one here",20,true);
-        manual=new EditText(this);manual.setHint("Paste a message without personal information");manual.setGravity(Gravity.TOP);manual.setMinLines(3);manual.setFilters(new InputFilter[]{new InputFilter.LengthFilter(5000)});manual.setInputType(android.text.InputType.TYPE_CLASS_TEXT|android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE);page.addView(manual);
+        manual=new EditText(this);manual.setSaveEnabled(false);manual.setHint("Paste a message without personal information");manual.setGravity(Gravity.TOP);manual.setMinLines(3);manual.setFilters(new InputFilter[]{new InputFilter.LengthFilter(5000)});manual.setInputType(android.text.InputType.TYPE_CLASS_TEXT|android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE);page.addView(manual);
         button("Check locally",v->checkManual());
         button("Run labelled test alert",v->{
             Detector.Result r=Detector.analyze("FNB FINAL WARNING: enter your OTP at https://fnb.co.za@account-check.example");
@@ -82,7 +88,7 @@ public final class MainActivity extends Activity {
     private void refresh() {
         if(status==null)return;
         var p=WatchService.prefs(this);
-        boolean selected=p.getBoolean("whatsapp",false)||p.getBoolean("sms",false);
+        boolean selected=p.getBoolean("whatsapp",false)||(p.getBoolean("sms",false)&&Telephony.Sms.getDefaultSmsPackage(this)!=null);
         status.setText(!p.getBoolean("enabled",false)?"Watch is paused":!access()?"Watch needs notification access":!WatchService.alertsAvailable(this)?"Warnings are blocked — enable notifications":!selected?"No sources selected":!WatchService.connected?"Waiting for Android to connect Watch":"Watch is listening • available previews only");
         if(evidence!=null) evidence.setText(WatchService.lastResult==null?"No warning in this session.":WatchService.lastSource+"\n\n"+WatchService.lastResult.explanation());
     }

@@ -1,4 +1,6 @@
-# PhishGuard Intercept
+# PhishGuard Intercept + Android Watch
+
+New: [Android Watch native app and setup guide](android-watch/README.md). Opt-in checks of available WhatsApp/default-SMS notifications; native demo needs physical-device testing.
 
 Share a suspicious message, reveal its actual destination, and pause before acting. See [product direction and phone demo](docs/INTERCEPT_PRODUCT.md). Android share-target support is implemented; physical-device installation testing remains required. No inbox monitoring or automatic system-wide blocking is claimed.
 

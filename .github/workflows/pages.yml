@@ -38,6 +38,7 @@ jobs:
         run: |
           mkdir -p dist/downloads
           cp android-watch/app/build/outputs/apk/debug/app-debug.apk dist/downloads/PhishGuard-Watch-demo.apk
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose dist/downloads/PhishGuard-Watch-demo.apk
           sha256sum dist/downloads/PhishGuard-Watch-demo.apk > dist/downloads/PhishGuard-Watch-demo.apk.sha256
       - uses: actions/upload-artifact@v4
         with:
