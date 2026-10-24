@@ -2,7 +2,7 @@
 
 Supabase project `mopoehdxwyzwxxbpmqeg` is now authenticated and linked to this checkout. The quota migration is applied, `RATE_LIMIT_SALT` and local `ALLOWED_ORIGINS` are configured, and `analyze-message` is deployed. Live tests verified High/Low risk results, consent validation, CORS, no-store responses and the per-client 429 limit. The shared database password was not used, saved in source or needed for this connection.
 
-The local frontend endpoint is configured in ignored `.env.local`. Local rules remain the default. `GEMINI_API_KEY` and `GEMINI_MODEL` are not configured, so the optional AI path currently returns an explicit rule-only fallback. No frontend host is deployed yet.
+The local frontend endpoint is configured in ignored `.env.local`. Local rules remain the default. `GEMINI_API_KEY` and `GEMINI_MODEL` are not configured, so the optional AI path currently returns an explicit rule-only fallback. The frontend is live at https://edwinlebo.github.io/PhishGuard/ and its cloud check is verified.
 
 ## Connect your project
 
@@ -24,11 +24,11 @@ The Supabase CLI can run via npx; Docker is needed for the complete local Supaba
    - `GEMINI_API_KEY`: your Gemini API key.
    - `GEMINI_MODEL`: a currently available generateContent model ID in your account.
    - `RATE_LIMIT_SALT`: already generated and configured. Preserve the existing secret.
-   - `ALLOWED_ORIGINS`: currently `http://127.0.0.1:5173,http://localhost:5173`. Add the final frontend origin when hosting is selected. Use exact origins without paths or trailing slashes.
+   - `ALLOWED_ORIGINS`: currently `http://127.0.0.1:5173,http://localhost:5173,https://edwinlebo.github.io`. Add the final frontend origin when hosting is selected. Use exact origins without paths or trailing slashes.
 3. The Edge runtime provides `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`. Never put the service-role key in the frontend or a `VITE_` variable. It is used only inside the Edge Function to call the restricted RPC.
 4. The function is already deployed. For subsequent source changes use `npx supabase functions deploy analyze-message --use-api`. Supabase reads secret changes without redeploying.
 5. After deployment, create root `.env.local` containing `VITE_ANALYSIS_API=https://mopoehdxwyzwxxbpmqeg.supabase.co/functions/v1/analyze-message`.
-6. Restart Vite for local testing, or run `npm.cmd run build` for deployment. The opt-in AI checkbox appears when the endpoint is configured.
+6. Restart Vite for local testing, or run `npm.cmd run build` for deployment. The cloud-check consent checkbox appears when the endpoint is configured.
 7. Test allowed-origin preflight, opt-in explanations, opt-out local checks, quota rejection and AI failure fallback against the deployed function before demonstrating live AI.
 
 The anonymous demo endpoint uses `verify_jwt = false` in `supabase/config.toml`. No frontend key or sign-in is required for this version. This is intentional: the SQL quotas, not CORS or a public API key, limit paid AI calls. If you later add accounts, enable authentication and validate user JWTs before storing any private user data.
@@ -37,7 +37,7 @@ The anonymous demo endpoint uses `verify_jwt = false` in `supabase/config.toml`.
 
 Supabase is the backend here. Publish the Vite `dist` folder using a static host of your choice. Typical build settings are `npm run build` and output directory `dist`. Add the final HTTPS origin to `ALLOWED_ORIGINS`, configure the public endpoint environment variable in the host's build settings, then rebuild.
 
-No frontend host has been selected or deployed. The earlier Firebase deployment files have been retired. Add and verify CSP/security headers and SPA routing for the selected host; the backend URL must be allowed by that host's `connect-src` policy.
+GitHub Pages is selected and deployed at https://edwinlebo.github.io/PhishGuard/ . The earlier Firebase deployment files have been retired. Add and verify CSP/security headers and SPA routing for the selected host; the backend URL must be allowed by that host's `connect-src` policy.
 
 ## Privacy and limits
 
