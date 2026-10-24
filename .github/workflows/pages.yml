@@ -24,6 +24,27 @@ jobs:
       - run: npm run build
         env:
           VITE_ANALYSIS_API: https://mopoehdxwyzwxxbpmqeg.supabase.co/functions/v1/analyze-message
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.11.1'
+      - name: Verify and build Android Watch demo
+        working-directory: android-watch
+        run: gradle --no-daemon :app:testDebugUnitTest :app:lintDebug :app:assembleDebug
+      - name: Package signed Android demo
+        run: |
+          mkdir -p dist/downloads
+          cp android-watch/app/build/outputs/apk/debug/app-debug.apk dist/downloads/PhishGuard-Watch-demo.apk
+          sha256sum dist/downloads/PhishGuard-Watch-demo.apk > dist/downloads/PhishGuard-Watch-demo.apk.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PhishGuard-Watch-demo
+          path: |
+            dist/downloads/PhishGuard-Watch-demo.apk
+            dist/downloads/PhishGuard-Watch-demo.apk.sha256
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
