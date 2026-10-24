@@ -1,0 +1,35 @@
+{
+  "id": "./",
+  "name": "PhishGuard Intercept",
+  "short_name": "PhishGuard",
+  "description": "Share suspicious messages for a private, local assessment before you act.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fafbf8",
+  "theme_color": "#163b30",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "share_target": {
+    "action": "./share",
+    "method": "POST",
+    "enctype": "application/x-www-form-urlencoded",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  }
+}

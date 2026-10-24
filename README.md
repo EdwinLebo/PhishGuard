@@ -1,3 +1,7 @@
+# PhishGuard Intercept
+
+Share a suspicious message, reveal its actual destination, and pause before acting. See [product direction and phone demo](docs/INTERCEPT_PRODUCT.md). Android share-target support is implemented; physical-device installation testing remains required. No inbox monitoring or automatic system-wide blocking is claimed.
+
 # PhishGuard AI
 
 A student-focused phishing checker by CyberSentinels. Paste a message or link, inspect an advisory risk rating, understand warning signs and verify independently.

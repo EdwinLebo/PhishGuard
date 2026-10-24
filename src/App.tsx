@@ -1,7 +1,9 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ArrowDown, ArrowRight, ArrowUpRight, Check, ChevronRight, CircleHelp, Copy, Fingerprint, GraduationCap, Link2, LockKeyhole, Menu, MessageSquareText, ScanLine, Shield, ShieldCheck, Sparkles, TriangleAlert, X } from 'lucide-react';
 import { analyze, MAX_INPUT_LENGTH } from '../supabase/functions/_shared/analyze.mjs';
 import AwarenessQuiz from './AwarenessQuiz';
+import Intercept from './Intercept';
+import { readSharedInput } from './shared-input.mjs';
 type Result = ReturnType<typeof analyze> & { aiExplanation?: string; source: string };
 const examples = [
   { category: 'BURSARY SCAM', title: 'The funding that comes with a fee', text: 'NSFAS: Congratulations! Your bursary has been approved. Pay a R250 processing fee today to release your funds. Verify your banking details at https://nsfas-funding.example/claim', tone: 'rose' },
@@ -15,6 +17,15 @@ export default function App() {
   const [menu, setMenu] = useState(false); const [aiConsent, setAiConsent] = useState(false); const [aiNotice, setAiNotice] = useState('');
   const textarea = useRef<HTMLTextAreaElement>(null); const resultRef = useRef<HTMLDivElement>(null);
   const endpoint = import.meta.env.VITE_ANALYSIS_API as string | undefined;
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (!hash.startsWith('#shared=') && hash !== '#share-error') return;
+    const shared = readSharedInput(hash);
+    history.replaceState(null, '', location.pathname + '#checker');
+    if (shared) { setInput(shared); setResult(analyze(shared)); }
+    else setError('This share could not be read. Paste a message of up to 5,000 characters.');
+    document.getElementById('checker')?.scrollIntoView();
+  }, []);
   function loadExample(text: string) {
     setInput(text); setResult(null); setError(''); setMode('Message'); setAiNotice('');
     document.getElementById('checker')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); textarea.current?.focus({ preventScroll: true });
@@ -43,20 +54,21 @@ export default function App() {
     } catch { setError('Clipboard access is unavailable in this browser. You can select the result text to copy it.'); }
   }
   return <>
-    <header className="site-header"><a href="#" className="brand" aria-label="PhishGuard home"><span className="brand-icon"><ShieldCheck size={23}/></span>PhishGuard<span className="brand-ai">AI</span></a>
+    <header className="site-header"><a href="#" className="brand" aria-label="PhishGuard home"><span className="brand-icon"><ShieldCheck size={23}/></span>PhishGuard<span className="brand-ai">INTERCEPT</span></a>
       <button className="menu-button" onClick={() => setMenu(!menu)} aria-label="Toggle navigation" aria-expanded={menu}>{menu ? <X/> : <Menu/>}</button>
-      <nav className={menu ? 'open' : ''} aria-label="Main navigation"><a href="#checker" onClick={() => setMenu(false)}>Message checker</a><a href="#how-it-works" onClick={() => setMenu(false)}>How it works</a><a href="#quiz" onClick={() => setMenu(false)}>Awareness quiz <ArrowUpRight size={14}/></a></nav>
+      <nav className={menu ? 'open' : ''} aria-label="Main navigation"><a href="#checker" onClick={() => setMenu(false)}>Message checker</a><a href="#intercept" onClick={() => setMenu(false)}>Phone protection demo</a><a href="#quiz" onClick={() => setMenu(false)}>Awareness quiz <ArrowUpRight size={14}/></a></nav>
       <span className="header-note"><span className="status-dot"/> Built for safer clicks</span>
     </header>
     <main>
-      <section className="hero"><div className="hero-copy"><span className="eyebrow"><span className="small-line"/> YOUR SECOND OPINION, BEFORE YOU CLICK</span>
-        <h1>A convincing message.<br/>A <span>safer next move.</span></h1><p className="intro">That bursary offer. That urgent bank alert. That link that feels a little off. Take a moment to check it.</p>
-        <div className="hero-actions"><a className="primary" href="#checker">Check a message <ArrowDown size={17}/></a><span><GraduationCap size={20}/> Made for SA students</span></div>
+      <section className="hero"><div className="hero-copy"><span className="eyebrow"><span className="small-line"/> THE PAUSE THAT PUTS YOU BACK IN CONTROL</span>
+        <h1>Catch the red flags.<br/><span>Before the next tap.</span></h1><p className="intro">A bank alert. A bursary fee. A disguised link. PhishGuard Intercept reveals the warning signs before you respond, click or pay.</p>
+        <div className="hero-actions"><a className="primary" href="#intercept">Try the phone experience <ArrowDown size={17}/></a><span><GraduationCap size={20}/> Made for SA students</span></div>
         <div className="hero-trust"><span><Check size={14}/> No sign-up</span><span><Check size={14}/> No links opened</span><span><Check size={14}/> Private local checks</span></div>
       </div><div className="hero-art" aria-label="Illustration of a suspicious bursary message being checked"><div className="orbit orbit-one"/><div className="orbit orbit-two"/><span className="art-label">A LITTLE PAUSE. A LOT OF PROTECTION.</span>
         <div className="floating-message"><div className="message-top"><span className="message-icon"><MessageSquareText size={20}/></span><div><strong>New message</strong><small>Unknown sender · now</small></div><span className="message-dots">•••</span></div><p>“Your bursary is approved! Pay a small processing fee to release your funds…”</p><span className="suspicious-link">nsfas-funding.example/claim</span></div>
         <div className="scan-beam"/><div className="shield-art"><ShieldCheck size={62} strokeWidth={1.4}/></div><div className="floating-verdict"><span className="warning-circle"><TriangleAlert size={20}/></span><div><strong>Something doesn’t add up.</strong><small>Pause. Check. Verify independently.</small></div><span className="verdict-dot"/></div><span className="illustration-label">ILLUSTRATIVE EXAMPLE · FICTIONAL MESSAGE</span>
       </div></section>
+      <Intercept onCheck={loadExample}/>
       <section className="workspace" id="checker"><div className="section-heading"><div><span className="eyebrow muted">THE MESSAGE CHECKER</span><h2>Let’s take a closer look.</h2><p>Paste the message or link. We’ll help you spot the warning signs.</p></div><span className="mode-badge"><span className="status-dot"/> Local checks ready</span></div>
         <div className="checker-grid"><form className="checker-card" onSubmit={check}><div className="input-top"><div className="tabs" role="group" aria-label="Input type">{['Message', 'Link'].map(t => <button type="button" className={mode === t ? 'tab active' : 'tab'} key={t} onClick={() => { setMode(t); setResult(null); }}>{t === 'Message' ? <MessageSquareText size={16}/> : <Link2 size={16}/>} {t}</button>)}</div><span className="formats">{mode === 'Message' ? 'SMS · WhatsApp · Email' : 'Website address'}</span></div>
           <label htmlFor="message" className="sr-only">{mode === 'Message' ? 'Suspicious message' : 'Suspicious link'}</label><textarea id="message" ref={textarea} value={input} onChange={e => { setInput(e.target.value); setResult(null); setError(''); setAiNotice(''); }} maxLength={MAX_INPUT_LENGTH} placeholder={mode === 'Message' ? 'Paste the message you’re unsure about here…' : 'Paste a link here, for example: https://website.example'} aria-describedby="privacy-note input-error" disabled={busy}/>
@@ -74,6 +86,6 @@ export default function App() {
       <section className="learn-section" id="learn"><div className="section-heading"><div><span className="eyebrow muted">A SHARPER EYE STARTS HERE</span><h2>Familiar messages. Hidden signals.</h2><p>Explore fictional examples inspired by everyday student experiences.</p></div><span className="example-note">Learn with an example <ChevronRight size={17}/></span></div><div className="example-grid">{examples.map((e,i) => <button className={`example-card ${e.tone}`} key={e.category} onClick={() => loadExample(e.text)}><div className="example-top"><span className="example-icon">{i === 0 ? <GraduationCap size={23}/> : i === 1 ? <LockKeyhole size={22}/> : <MessageSquareText size={22}/>}</span><ArrowUpRight size={20}/></div><span className="eyebrow">{e.category}</span><h3>{e.title}</h3><span className="example-cta">Check this example <ArrowRight size={15}/></span></button>)}</div></section>
       <AwarenessQuiz/>
       <section className="safety-strip"><Shield size={24}/><div><strong>A helpful signal. Always verify.</strong><p>PhishGuard checks patterns in text. It does not verify senders, visit links, or guarantee that a message is safe.</p></div></section>
-    </main><footer><a href="#" className="brand"><ShieldCheck size={21}/>PhishGuard<span className="brand-ai">AI</span></a><p>Think before you click. Verify before you trust.</p><span>Built by CyberSentinels <span className="footer-dot">/</span> Hackathon prototype</span></footer>
+    </main><footer><a href="#" className="brand"><ShieldCheck size={21}/>PhishGuard<span className="brand-ai">INTERCEPT</span></a><p>Think before you click. Verify before you trust.</p><span>Built by CyberSentinels <span className="footer-dot">/</span> Hackathon prototype</span></footer>
   </>;
 }
