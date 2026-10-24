@@ -1,0 +1,7 @@
+project_id = "phishguard"
+
+[functions.analyze-message]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/analyze-message/index.ts"
+# Anonymous demo endpoint; server-enforced SQL quotas protect AI calls.
